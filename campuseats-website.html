@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusEats — Closed-Loop, Secure Food Delivery for NBU Students</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-deep:#163A2B;
+  --green:#1F5C3F;
+  --green-bright:#2F8F5B;
+  --gold:#F0A93E;
+  --gold-soft:#FBDFA6;
+  --spice:#C1440C;
+  --ivory:#FFF8EC;
+  --paper:#FFFCF6;
+  --ink:#1B1B16;
+  --ink-soft:#5B584E;
+  --line:rgba(27,27,22,.12);
+  --white:#ffffff;
+  --shadow: 0 10px 30px rgba(22,58,43,.10);
+  --radius: 14px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;font-family:'General Sans',-apple-system,sans-serif;background:var(--ivory);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4{font-family:'Clash Display',sans-serif;font-weight:700;margin:0 0 .4em;line-height:1.08;letter-spacing:-.01em;color:var(--green-deep);}
+p{margin:0 0 1em;color:var(--ink-soft);}
+a{color:inherit;text-decoration:none;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+img,svg{display:block;max-width:100%;}
+button{font-family:inherit;cursor:pointer;}
+.container{max-width:1180px;margin:0 auto;padding:0 24px;}
+.hidden{display:none !important;}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important;}}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 24px;border-radius:999px;border:2px solid transparent;font-weight:600;font-size:15px;transition:transform .15s ease, box-shadow .15s ease, background .15s ease;white-space:nowrap;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--spice);color:var(--white);}
+.btn-primary:hover{background:#a83a0a;box-shadow:0 8px 20px rgba(193,68,12,.3);}
+.btn-gold{background:var(--gold);color:var(--green-deep);}
+.btn-gold:hover{box-shadow:0 8px 20px rgba(240,169,62,.4);}
+.btn-outline{background:transparent;border-color:var(--green-deep);color:var(--green-deep);}
+.btn-outline:hover{background:var(--green-deep);color:var(--white);}
+.btn-outline-light{background:transparent;border-color:rgba(255,255,255,.5);color:var(--white);}
+.btn-outline-light:hover{background:rgba(255,255,255,.15);}
+.btn-ghost{background:transparent;color:var(--green-deep);border-color:transparent;padding:10px 14px;}
+.btn-ghost:hover{background:rgba(22,58,43,.06);}
+.btn-sm{padding:8px 16px;font-size:13px;}
+.btn-block{width:100%;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+
+/* ---------- Header / Nav ---------- */
+header.site{position:sticky;top:0;z-index:100;background:var(--green-deep);border-bottom:3px solid var(--gold);}
+.navbar{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;max-width:1180px;margin:0 auto;gap:16px;}
+.brand{display:flex;align-items:center;gap:10px;color:var(--white);}
+.brand-name{font-family:'Clash Display',sans-serif;font-weight:700;font-size:20px;letter-spacing:-.01em;}
+.brand-tag{display:block;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--gold-soft);letter-spacing:.03em;margin-top:-2px;}
+nav.links{display:flex;gap:4px;align-items:center;}
+nav.links a{color:rgba(255,255,255,.82);font-weight:500;font-size:14.5px;padding:10px 12px;border-radius:8px;position:relative;transition:color .15s;}
+nav.links a:hover{color:var(--white);}
+nav.links a.active{color:var(--white);}
+nav.links a.active::after{content:'';position:absolute;left:12px;right:12px;bottom:2px;height:2px;background:var(--gold);border-radius:2px;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.icon-btn{position:relative;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:var(--white);width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.icon-btn:hover{background:rgba(255,255,255,.16);}
+.cart-count{position:absolute;top:-6px;right:-6px;background:var(--gold);color:var(--green-deep);font-size:11px;font-weight:700;min-width:18px;height:18px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 4px;font-family:'IBM Plex Mono',monospace;}
+.hamburger{display:none;background:none;border:none;color:var(--white);}
+@media (max-width:980px){
+  nav.links{position:fixed;top:66px;left:0;right:0;bottom:0;background:var(--green-deep);flex-direction:column;align-items:stretch;padding:12px;gap:0;transform:translateX(-100%);transition:transform .25s ease;overflow-y:auto;}
+  nav.links.open{transform:translateX(0);}
+  nav.links a{padding:14px 12px;border-bottom:1px solid rgba(255,255,255,.08);}
+  .hamburger{display:flex;}
+}
+
+/* ---------- Layout helpers ---------- */
+.section{padding:64px 0;}
+.section-tight{padding:40px 0;}
+.section-alt{background:var(--paper);}
+.section-dark{background:var(--green-deep);color:var(--white);}
+.section-dark h2,.section-dark h3{color:var(--white);}
+.section-dark p{color:rgba(255,255,255,.72);}
+.eyebrow{font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:var(--spice);font-weight:600;margin-bottom:10px;display:inline-block;}
+.section-dark .eyebrow{color:var(--gold);}
+.section-head{max-width:640px;margin-bottom:36px;}
+.grid{display:grid;gap:22px;}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+@media (max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr);}.grid-3{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:620px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr;}}
+
+/* ---------- Hero / node map ---------- */
+.hero{position:relative;background:var(--green-deep);color:var(--white);overflow:hidden;padding:70px 0 0;}
+.hero-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;}
+@media (max-width:980px){.hero-grid{grid-template-columns:1fr;}}
+.hero h1{color:var(--white);font-size:clamp(34px,5vw,58px);}
+.hero .lede{color:rgba(255,255,255,.78);font-size:17px;max-width:480px;}
+.hero-search{display:flex;gap:8px;background:var(--white);padding:6px;border-radius:999px;max-width:460px;box-shadow:var(--shadow);margin:22px 0 26px;}
+.hero-search input{border:none;background:none;flex:1;padding:10px 14px;font-family:inherit;font-size:15px;color:var(--ink);}
+.hero-search input:focus{outline:none;}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;}
+.stat-strip{display:flex;gap:0;margin-top:40px;border-top:1px solid rgba(255,255,255,.15);}
+.stat-strip .stat{flex:1;padding:18px 6px 0;border-right:1px solid rgba(255,255,255,.15);}
+.stat-strip .stat:last-child{border-right:none;}
+.stat-num{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:var(--gold);}
+.stat-label{font-size:12.5px;color:rgba(255,255,255,.6);}
+.node-wrap{position:relative;padding:20px 0 40px;}
+.node-map-badge{position:absolute;top:0;right:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:6px 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold-soft);display:flex;align-items:center;gap:8px;}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse 1.4s infinite;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(240,169,62,.6);}70%{box-shadow:0 0 0 8px rgba(240,169,62,0);}100%{box-shadow:0 0 0 0 rgba(240,169,62,0);}}
+.node-line{stroke:rgba(255,255,255,.3);stroke-width:1.6;stroke-dasharray:4 5;}
+.node-line.live{stroke:var(--gold);stroke-width:2;}
+.node-dot{fill:var(--ivory);stroke:var(--green-deep);stroke-width:2;}
+.node-dot.hub{fill:var(--gold);}
+.node-courier{fill:var(--spice);}
+.node-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;fill:rgba(255,255,255,.75);}
+.courier-mover{offset-rotate:0deg;animation:move 6s linear infinite;}
+@keyframes move{0%{offset-distance:0%;}100%{offset-distance:100%;}}
+
+/* ---------- Cards ---------- */
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:20px;transition:box-shadow .2s, transform .2s;}
+.card:hover{box-shadow:var(--shadow);transform:translateY(-2px);}
+.vendor-card .thumb{width:100%;height:110px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--green-bright));display:flex;align-items:center;justify-content:center;font-size:38px;margin-bottom:14px;}
+.vendor-card h4{font-size:17px;margin-bottom:2px;}
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--paper);border:1px solid var(--line);color:var(--ink-soft);}
+.badge-gold{background:var(--gold-soft);color:#7a4d0c;border-color:transparent;}
+.badge-green{background:#DCEFE3;color:var(--green-deep);border-color:transparent;}
+.rating{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--spice);font-weight:600;}
+.zone-tag{font-size:12px;color:var(--ink-soft);display:flex;align-items:center;gap:5px;margin-top:6px;}
+
+/* menu item card */
+.menu-card{display:flex;gap:14px;padding:16px;border:1px solid var(--line);border-radius:var(--radius);background:var(--white);align-items:center;}
+.menu-card .emoji{width:56px;height:56px;border-radius:10px;background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.menu-card .info{flex:1;min-width:0;}
+.menu-card h4{font-size:15.5px;margin-bottom:2px;}
+.menu-card .price{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--green-deep);}
+.menu-card .desc{font-size:13px;margin:2px 0 0;}
+.qty-add{display:flex;align-items:center;gap:6px;}
+.qty-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--paper);font-size:16px;display:flex;align-items:center;justify-content:center;}
+.qty-num{min-width:20px;text-align:center;font-family:'IBM Plex Mono',monospace;}
+
+/* ---------- How it works ---------- */
+.step{display:flex;gap:16px;align-items:flex-start;}
+.step-num{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:14px;color:var(--gold);background:var(--green-deep);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-line{width:2px;flex:1;background:var(--line);margin:6px 0 6px 17px;}
+
+/* ---------- Tabs / forms ---------- */
+.tabs{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px;max-width:fit-content;margin-bottom:24px;}
+.tab{padding:9px 20px;border-radius:999px;font-weight:600;font-size:14px;color:var(--ink-soft);}
+.tab.active{background:var(--green-deep);color:var(--white);}
+.form-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:32px;max-width:460px;margin:0 auto;box-shadow:var(--shadow);}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--green-deep);}
+.field input,.field select,.field textarea{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:9px;font-family:inherit;font-size:14.5px;background:var(--paper);color:var(--ink);}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green-bright);background:var(--white);}
+.field-hint{font-size:12px;color:var(--ink-soft);margin-top:5px;}
+.field-error{font-size:12px;color:var(--spice);margin-top:5px;display:none;}
+.form-msg{background:#DCEFE3;color:var(--green-deep);border-radius:9px;padding:12px 14px;font-size:13.5px;margin-bottom:16px;display:none;}
+
+/* ---------- Security badge ---------- */
+.security-badge{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border:1px solid rgba(240,169,62,.4);padding:10px 16px;border-radius:12px;}
+.security-badge svg{flex-shrink:0;}
+.security-badge .t1{font-size:13px;font-weight:700;color:var(--gold);}
+.security-badge .t2{font-size:11.5px;color:rgba(255,255,255,.65);}
+
+/* ---------- Order stepper ---------- */
+.stepper{display:flex;justify-content:space-between;margin:26px 0;position:relative;}
+.stepper::before{content:'';position:absolute;top:15px;left:5%;right:5%;height:2px;background:var(--line);z-index:0;}
+.stepper .st{flex:1;text-align:center;position:relative;z-index:1;}
+.stepper .dot{width:32px;height:32px;border-radius:50%;background:var(--white);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink-soft);transition:all .3s;}
+.stepper .st.done .dot{background:var(--green-bright);border-color:var(--green-bright);color:var(--white);}
+.stepper .st.current .dot{background:var(--gold);border-color:var(--gold);color:var(--green-deep);box-shadow:0 0 0 5px var(--gold-soft);}
+.stepper .st-label{font-size:11.5px;font-weight:600;color:var(--ink-soft);}
+.stepper .st.done .st-label,.stepper .st.current .st-label{color:var(--green-deep);}
+
+/* ---------- Dashboards ---------- */
+.dash-shell{display:grid;grid-template-columns:220px 1fr;gap:28px;}
+@media (max-width:820px){.dash-shell{grid-template-columns:1fr;}}
+.dash-side{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:16px;height:fit-content;}
+.dash-side .who{padding:10px 8px 16px;border-bottom:1px solid var(--line);margin-bottom:10px;}
+.dash-side .who .name{font-weight:700;color:var(--green-deep);}
+.dash-side .who .role{font-size:12px;color:var(--ink-soft);}
+.dash-nav a{display:block;padding:10px 10px;border-radius:8px;font-size:14px;font-weight:500;color:var(--ink-soft);margin-bottom:2px;}
+.dash-nav a.active,.dash-nav a:hover{background:var(--paper);color:var(--green-deep);}
+.dash-pane{display:none;}
+.dash-pane.active{display:block;}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+@media (max-width:620px){.kpi-row{grid-template-columns:1fr;}}
+.kpi{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:18px;}
+.kpi .v{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;color:var(--green-deep);}
+.kpi .l{font-size:12.5px;color:var(--ink-soft);}
+table.tbl{width:100%;border-collapse:collapse;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+table.tbl th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);background:var(--paper);padding:12px 14px;}
+table.tbl td{padding:12px 14px;border-top:1px solid var(--line);font-size:14px;}
+.status-pill{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;font-family:'IBM Plex Mono',monospace;}
+.status-Placed{background:#EAE6FA;color:#5B3FBA;}
+.status-Preparing{background:var(--gold-soft);color:#7a4d0c;}
+.status-Ready{background:#DCEFE3;color:var(--green-deep);}
+.status-Dispatched{background:#FCE3D6;color:var(--spice);}
+.status-Delivered{background:#DCEFE3;color:var(--green-bright);}
+.bar-chart{display:flex;align-items:flex-end;gap:12px;height:160px;padding-top:20px;}
+.bar-chart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.bar-chart .bar{width:100%;background:linear-gradient(180deg,var(--green-bright),var(--green-deep));border-radius:6px 6px 0 0;}
+.bar-chart .lbl{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+.split-bar{display:flex;height:34px;border-radius:8px;overflow:hidden;margin:14px 0;}
+.split-bar span{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;font-family:'IBM Plex Mono',monospace;}
+.empty-state{text-align:center;padding:50px 20px;color:var(--ink-soft);}
+
+/* ---------- FAQ ---------- */
+.faq-item{border-bottom:1px solid var(--line);}
+.faq-q{width:100%;text-align:left;background:none;border:none;padding:18px 0;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:15.5px;color:var(--green-deep);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+.faq-a p{padding-bottom:16px;margin:0;}
+.faq-item.open .faq-a{max-height:300px;}
+.faq-plus{transition:transform .25s;font-size:20px;color:var(--spice);}
+.faq-item.open .faq-plus{transform:rotate(45deg);}
+
+/* ---------- Zones page map ---------- */
+.zone-map-wrap{background:var(--green-deep);border-radius:20px;padding:24px;position:relative;}
+.zone-list{margin-top:20px;}
+.zone-row{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:var(--white);margin-bottom:10px;}
+.zone-row .coords{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);}
+
+/* ---------- Blog ---------- */
+.blog-card .date{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--spice);text-transform:uppercase;letter-spacing:.05em;}
+
+/* ---------- Testimonials ---------- */
+.tcard{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:22px;}
+.tcard .quote{font-size:15px;color:var(--ink);}
+.tcard .who{margin-top:14px;font-weight:700;color:var(--green-deep);font-size:13.5px;}
+.tcard .who span{display:block;font-weight:400;color:var(--ink-soft);font-size:12px;}
+
+/* ---------- Cart drawer ---------- */
+.overlay{position:fixed;inset:0;background:rgba(22,58,43,.45);z-index:200;display:none;}
+.overlay.open{display:block;}
+.cart-drawer{position:fixed;top:0;right:0;bottom:0;width:380px;max-width:92vw;background:var(--white);z-index:201;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column;}
+.cart-drawer.open{transform:translateX(0);}
+.cart-head{padding:20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+.cart-items{flex:1;overflow-y:auto;padding:14px 20px;}
+.cart-line{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);gap:10px;}
+.cart-line .name{font-size:14px;font-weight:600;}
+.cart-line .sub{font-size:12px;color:var(--ink-soft);}
+.cart-foot{padding:18px 20px;border-top:1px solid var(--line);}
+.cart-total-row{display:flex;justify-content:space-between;font-weight:700;color:var(--green-deep);margin-bottom:4px;}
+.cart-total-row.sub{font-weight:400;color:var(--ink-soft);font-size:13.5px;}
+
+/* ---------- Toast ---------- */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green-deep);color:var(--white);padding:13px 22px;border-radius:999px;font-size:14px;font-weight:500;box-shadow:var(--shadow);z-index:300;opacity:0;pointer-events:none;transition:all .25s;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ---------- Footer ---------- */
+footer.site{background:var(--green-deep);color:rgba(255,255,255,.7);padding:56px 0 24px;}
+footer.site h4{color:var(--white);font-size:15px;font-family:'General Sans',sans-serif;font-weight:700;}
+footer.site a{display:block;color:rgba(255,255,255,.6);font-size:13.5px;padding:5px 0;}
+footer.site a:hover{color:var(--gold);}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:30px;}
+@media (max-width:780px){.foot-grid{grid-template-columns:1fr 1fr;}}
+.foot-bottom{border-top:1px solid rgba(255,255,255,.15);margin-top:40px;padding-top:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12.5px;}
+
+/* misc */
+.center{text-align:center;}
+.mt-0{margin-top:0;}
+.flex-between{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.chip-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px;}
+.chip{padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--white);font-size:13.5px;font-weight:600;color:var(--ink-soft);}
+.chip.active{background:var(--green-deep);color:var(--white);border-color:var(--green-deep);}
+.demo-note{background:var(--gold-soft);color:#7a4d0c;border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:24px;}
+.otp-box{font-family:'IBM Plex Mono',monospace;font-size:22px;letter-spacing:.3em;font-weight:600;background:var(--green-deep);color:var(--gold);padding:14px;border-radius:10px;text-align:center;}
+.policy-content h3{margin-top:28px;}
+.policy-content ul{color:var(--ink-soft);padding-left:20px;}
+.policy-content li{margin-bottom:8px;}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="navbar">
+    <a href="#" class="brand" data-view="home">
+      <svg viewBox="0 0 40 44" width="36" height="36">
+        <rect x="1" y="1" width="38" height="30" rx="10" fill="#F0A93E" opacity="0"/>
+        <rect x="1" y="1" width="38" height="30" rx="10" fill="#1F5C3F"/>
+        <g stroke="#F0A93E" stroke-width="2" stroke-linecap="round">
+          <line x1="12" y1="8" x2="12" y2="16"/>
+          <line x1="9" y1="8" x2="9" y2="13"/>
+          <line x1="15" y1="8" x2="15" y2="13"/>
+          <line x1="12" y1="16" x2="12" y2="27"/>
+        </g>
+        <g stroke="#F0A93E" stroke-width="2" stroke-linecap="round" fill="none">
+          <ellipse cx="27" cy="11" rx="4" ry="5"/>
+          <line x1="27" y1="16" x2="27" y2="27"/>
+        </g>
+        <g fill="#F0A93E">
+          <rect x="8" y="33" width="2.5" height="8"/>
+          <rect x="14.5" y="33" width="2.5" height="8"/>
+          <rect x="21" y="33" width="2.5" height="8"/>
+          <rect x="27.5" y="33" width="2.5" height="8"/>
+          <rect x="6" y="31" width="26" height="2.5" rx="1"/>
+        </g>
+      </svg>
+      <span>
+        <span class="brand-name">CampusEats</span>
+        <span class="brand-tag">NBU · CLOSED-LOOP DELIVERY</span>
+      </span>
+    </a>
+    <nav class="links" id="navLinks">
+      <a href="#" data-view="home">Home</a>
+      <a href="#" data-view="menu">Menu</a>
+      <a href="#" data-view="zones">Delivery Zones</a>
+      <a href="#" data-view="how">How It Works</a>
+      <a href="#" data-view="about">About</a>
+      <a href="#" data-view="blog">Blog</a>
+      <a href="#" data-view="contact">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <button class="icon-btn" title="Cart" onclick="openCart()">
+        🛒<span class="cart-count" id="cartCount">0</span>
+      </button>
+      <a href="#" class="btn btn-ghost" style="color:#fff" data-view="login">Log in</a>
+      <a href="#" class="btn btn-gold btn-sm" data-view="register">Register</a>
+      <button class="hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============= HOME ============= -->
+<section class="view" id="view-home">
+  <div class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">Nigerian British University</span>
+          <h1>Order Food. Get Delivered.<br>Stay Secure.</h1>
+          <p class="lede">CampusEats connects verified NBU students with campus vendors and fellow student couriers — a closed-loop network that never leaves campus.</p>
+          <form class="hero-search" onsubmit="return doSearch(event)">
+            <input type="text" id="heroSearch" placeholder="Search jollof, suya, shawarma, smoothies…">
+            <button class="btn btn-primary" type="submit">Search</button>
+          </form>
+          <div class="hero-ctas">
+            <a href="#" class="btn btn-gold" data-view="menu">Browse Menu</a>
+            <a href="#" class="btn btn-outline-light" data-view="how">How It Works</a>
+          </div>
+          <div class="stat-strip">
+            <div class="stat"><div class="stat-num">50+</div><div class="stat-label">Student Couriers</div></div>
+            <div class="stat"><div class="stat-num">15+</div><div class="stat-label">Campus Vendors</div></div>
+            <div class="stat"><div class="stat-num">100%</div><div class="stat-label">NBU Student Verified</div></div>
+          </div>
+        </div>
+        <div class="node-wrap">
+          <div class="node-map-badge"><span class="pulse-dot"></span> LIVE · LAST-METER NODE NETWORK</div>
+          <svg viewBox="0 0 600 480" style="width:100%;">
+            <defs>
+              <path id="routePath" d="M254,222 L369,260" fill="none"/>
+            </defs>
+            <line class="node-line live" x1="254" y1="222" x2="369" y2="260"/>
+            <line class="node-line" x1="254" y1="222" x2="185" y2="165"/>
+            <line class="node-line" x1="254" y1="222" x2="530" y2="298"/>
+            <line class="node-line" x1="254" y1="222" x2="139" y2="355"/>
+            <line class="node-line" x1="254" y1="222" x2="70" y2="70"/>
+            <line class="node-line" x1="254" y1="222" x2="300" y2="450"/>
+            <circle class="node-dot hub" cx="254" cy="222" r="9"/>
+            <text class="node-label" x="254" y="205" text-anchor="middle">MAIN CAMPUS</text>
+            <circle class="node-dot" cx="369" cy="260" r="7"/>
+            <text class="node-label" x="369" y="280" text-anchor="middle">ANDY HALL</text>
+            <circle class="node-dot" cx="185" cy="165" r="7"/>
+            <text class="node-label" x="185" y="148" text-anchor="middle">ST. LOUIS</text>
+            <circle class="node-dot" cx="530" cy="298" r="7"/>
+            <text class="node-label" x="500" y="318" text-anchor="middle">GIRLS HOSTEL</text>
+            <circle class="node-dot" cx="139" cy="355" r="7"/>
+            <text class="node-label" x="139" y="375" text-anchor="middle">LAW FACULTY</text>
+            <circle class="node-dot" cx="70" cy="70" r="7"/>
+            <text class="node-label" x="90" y="55" text-anchor="middle">ICT CENTRE</text>
+            <circle class="node-dot" cx="300" cy="450" r="7"/>
+            <text class="node-label" x="300" y="470" text-anchor="middle">GEN. FACULTY</text>
+            <circle class="node-courier" r="5">
+              <animateMotion dur="3.5s" repeatCount="indefinite" rotate="auto">
+                <mpath href="#routePath"/>
+              </animateMotion>
+            </circle>
+          </svg>
+          <p style="color:rgba(255,255,255,.55);font-size:12.5px;text-align:center;">Every order routes hub → hostel/faculty node, tracked in real time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="container">
+      <div class="flex-between section-head" style="margin-bottom:24px;">
+        <div>
+          <span class="eyebrow">Featured on campus</span>
+          <h2 style="margin-bottom:0;">Vendors students order from most</h2>
+        </div>
+        <a href="#" class="btn btn-outline" data-view="menu">View full menu →</a>
+      </div>
+      <div class="grid grid-4" id="featuredVendors"></div>
+    </div>
+  </div>
+
+  <div class="section section-alt">
+    <div class="container">
+      <div class="section-head center" style="margin-left:auto;margin-right:auto;">
+        <span class="eyebrow">How it works</span>
+        <h2>Order, Prepare, Deliver</h2>
+        <p>Three steps, one closed campus loop — from your phone to your hostel door.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <div class="step-num" style="margin-bottom:14px;">01</div>
+          <h4>Order</h4>
+          <p>Browse verified campus vendors, build your cart, and check out with your NBU-linked account. Zero delivery fee on campus.</p>
+        </div>
+        <div class="card">
+          <div class="step-num" style="margin-bottom:14px;">02</div>
+          <h4>Prepare</h4>
+          <p>The vendor accepts your order and starts cooking. You'll see live status change from Placed to Preparing to Ready.</p>
+        </div>
+        <div class="card">
+          <div class="step-num" style="margin-bottom:14px;">03</div>
+          <h4>Deliver</h4>
+          <p>A verified student courier claims your order and delivers it to your exact hostel block or faculty node. Confirm with your OTP.</p>
+        </div>
+      </div>
+      <div class="center" style="margin-top:30px;">
+        <a href="#" class="btn btn-primary" data-view="how">See the full process →</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section section-dark">
+    <div class="container">
+      <div class="grid grid-3">
+        <div>
+          <span class="eyebrow">Closed-loop security</span>
+          <h3>Only verified NBU accounts</h3>
+          <p>Every customer, vendor, and courier signs in with a verified @nbu.edu.ng or @nigerianbritishuniversity.edu.ng email — no outsiders on the platform.</p>
+        </div>
+        <div>
+          <span class="eyebrow">Student-led couriers</span>
+          <h3>Delivery by fellow students</h3>
+          <p>Couriers are NBU students earning between classes. Fast, familiar, and accountable to the same community you're part of.</p>
+        </div>
+        <div>
+          <span class="eyebrow">Last-meter node strategy</span>
+          <h3>Precision delivery, not guesswork</h3>
+          <p>Orders route to exact hostel blocks and faculty floors — Andy Hall Block 3 is not the same stop as Block 1, and CampusEats knows the difference.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="container">
+      <div class="section-head center" style="margin-left:auto;margin-right:auto;">
+        <span class="eyebrow">What NBU is saying</span>
+        <h2>Trusted across hostels and faculties</h2>
+      </div>
+      <div class="grid grid-4" id="homeTestimonials"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= MENU ============= -->
+<section class="view hidden" id="view-menu">
+  <div class="section-tight">
+    <div class="container">
+      <span class="eyebrow">Full menu</span>
+      <h2>What are you eating today?</h2>
+      <div class="hero-search" style="background:var(--white);border:1px solid var(--line);box-shadow:none;max-width:520px;margin:16px 0 22px;">
+        <input type="text" id="menuSearch" placeholder="Search for jollof, suya, shawarma…" oninput="renderMenuItems()" style="color:var(--ink);">
+      </div>
+      <div class="chip-filters" id="catFilters">
+        <button class="chip active" data-cat="all" onclick="setCat('all')">All</button>
+        <button class="chip" data-cat="breakfast" onclick="setCat('breakfast')">Breakfast</button>
+        <button class="chip" data-cat="lunch" onclick="setCat('lunch')">Lunch</button>
+        <button class="chip" data-cat="dinner" onclick="setCat('dinner')">Dinner</button>
+        <button class="chip" data-cat="snacks" onclick="setCat('snacks')">Snacks</button>
+      </div>
+      <p class="field-hint" style="margin-bottom:16px;" id="cartVendorNote"></p>
+      <div class="grid grid-2" id="menuItems"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= DELIVERY ZONES ============= -->
+<section class="view hidden" id="view-zones">
+  <div class="section-tight">
+    <div class="container">
+      <span class="eyebrow">Last-meter node strategy</span>
+      <h2>Delivery zones across NBU campus</h2>
+      <p style="max-width:640px;">CampusEats doesn't stop at "campus" — every order is routed to a specific building, block, or floor. Couriers claim delivery routes by zone, so your food always reaches the right node.</p>
+      <div class="zone-map-wrap">
+        <svg viewBox="0 0 600 480" style="width:100%;">
+          <line class="node-line live" x1="254" y1="222" x2="369" y2="260"/>
+          <line class="node-line live" x1="254" y1="222" x2="185" y2="165"/>
+          <line class="node-line live" x1="254" y1="222" x2="530" y2="298"/>
+          <line class="node-line live" x1="254" y1="222" x2="139" y2="355"/>
+          <line class="node-line live" x1="254" y1="222" x2="70" y2="70"/>
+          <line class="node-line live" x1="254" y1="222" x2="300" y2="450"/>
+          <circle class="node-dot hub" cx="254" cy="222" r="10"/>
+          <text class="node-label" x="254" y="203" text-anchor="middle">MAIN CAMPUS · HUB</text>
+          <circle class="node-dot" cx="369" cy="260" r="8"/>
+          <text class="node-label" x="369" y="282" text-anchor="middle">ANDY HALL</text>
+          <circle class="node-dot" cx="185" cy="165" r="8"/>
+          <text class="node-label" x="185" y="147" text-anchor="middle">ST. LOUIS</text>
+          <circle class="node-dot" cx="530" cy="298" r="8"/>
+          <text class="node-label" x="497" y="318" text-anchor="middle">GIRLS HOSTEL</text>
+          <circle class="node-dot" cx="139" cy="355" r="8"/>
+          <text class="node-label" x="139" y="377" text-anchor="middle">LAW FACULTY</text>
+          <circle class="node-dot" cx="70" cy="70" r="8"/>
+          <text class="node-label" x="95" y="53" text-anchor="middle">ICT CENTRE</text>
+          <circle class="node-dot" cx="300" cy="450" r="8"/>
+          <text class="node-label" x="300" y="472" text-anchor="middle">GENERAL FACULTY</text>
+        </svg>
+      </div>
+      <div class="zone-list" id="zoneList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= HOW IT WORKS ============= -->
+<section class="view hidden" id="view-how">
+  <div class="section-tight">
+    <div class="container">
+      <span class="eyebrow">Process</span>
+      <h2>How CampusEats works, start to finish</h2>
+      <div class="grid grid-2" style="margin-top:30px;align-items:start;">
+        <div>
+          <div class="step"><div class="step-num">1</div><div><h4>Select food</h4><p>Browse a verified vendor's menu, add items to your cart, and check out — no delivery fee for orders within NBU campus.</p></div></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">2</div><div><h4>Vendor receives order</h4><p>The vendor gets a live order notification, accepts it, prepares your food, and marks it Ready in their dashboard.</p></div></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">3</div><div><h4>Courier claims order</h4><p>A verified student courier near the vendor claims the delivery based on your zone and picks up the food.</p></div></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num">4</div><div><h4>Delivered &amp; confirmed</h4><p>Your courier delivers to your exact hostel block or faculty floor. You confirm delivery with a one-time OTP code.</p></div></div>
+        </div>
+        <div class="card">
+          <h4>Revenue split, per order</h4>
+          <p>CampusEats charges a flat ₦150 service fee per order (delivery itself stays free on campus). Here's how it's split:</p>
+          <div class="split-bar">
+            <span style="width:70%;background:var(--green-deep);">70% Courier</span>
+            <span style="width:15%;background:var(--gold);color:var(--green-deep);">15%</span>
+            <span style="width:15%;background:var(--spice);">15%</span>
+          </div>
+          <p style="font-size:12.5px;">70% Courier earnings · 15% Vendor bonus pool · 15% Platform operations</p>
+          <hr style="border:none;border-top:1px solid var(--line);margin:18px 0;">
+          <h4 style="font-size:16px;">Order status stages</h4>
+          <div class="stepper" style="margin:20px 0 0;">
+            <div class="st done"><div class="dot">✓</div><div class="st-label">Placed</div></div>
+            <div class="st done"><div class="dot">✓</div><div class="st-label">Preparing</div></div>
+            <div class="st current"><div class="dot">●</div><div class="st-label">Ready</div></div>
+            <div class="st"><div class="dot">4</div><div class="st-label">Dispatched</div></div>
+            <div class="st"><div class="dot">5</div><div class="st-label">Delivered</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= ABOUT ============= -->
+<section class="view hidden" id="view-about">
+  <div class="section-tight">
+    <div class="container">
+      <span class="eyebrow">About CampusEats</span>
+      <h2 style="max-width:700px;">A delivery network built for — and by — NBU students</h2>
+      <div class="grid grid-2" style="align-items:start;margin-top:20px;">
+        <div>
+          <p>CampusEats started as a simple observation: NBU students were already ordering food across hostels and faculties through scattered WhatsApp chats and word-of-mouth runners. There was no verification, no order tracking, and no guarantee your food — or your money — would arrive.</p>
+          <p>We built a closed-loop platform instead. Every customer, vendor, and courier on CampusEats is a verified member of the NBU community. Orders are tracked from the kitchen to your exact hostel block, and every delivery is confirmed with a one-time code so nothing goes missing in the last few metres.</p>
+          <p>Our mission is simple: make it fast, fair, and safe for students to eat well without leaving their studies — and give student couriers a reliable way to earn on campus.</p>
+        </div>
+        <div class="card">
+          <h4>What "closed-loop" means</h4>
+          <p style="margin-bottom:14px;">Nobody outside NBU can order, deliver, or sell on CampusEats. Every account is verified against an NBU email or student ID before it goes live.</p>
+          <h4>What "last-meter" means</h4>
+          <p style="margin-bottom:0;">We don't deliver to "campus" in general — we deliver to Andy Hall Block 3, not just Andy Hall. Precision is the whole point.</p>
+        </div>
+      </div>
+      <div class="grid grid-4" style="margin-top:36px;">
+        <div class="kpi"><div class="v">50+</div><div class="l">Student couriers</div></div>
+        <div class="kpi"><div class="v">15+</div><div class="l">Campus vendors</div></div>
+        <div class="kpi"><div class="v">6</div><div class="l">Delivery zones</div></div>
+        <div class="kpi"><div class="v">100%</div><div class="l">NBU verified</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= BLOG ============= -->
+<section class="view hidden" id="view-blog">
+  <div class="section-tight">
+    <div class="container">
+      <span class="eyebrow">Campus food news</span>
+      <h2>CampusEats Blog</h2>
+      <div class="grid grid-3" id="blogList" style="margin-top:20px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= FAQ ============= -->
+<section class="view hidden" id="view-faq">
+  <div class="section-tight">
+    <div class="container" style="max-width:760px;">
+      <span class="eyebrow">Support</span>
+      <h2>Frequently asked questions</h2>
+      <div id="faqList" style="margin-top:10px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= CONTACT ============= -->
+<section class="view hidden" id="view-contact">
+  <div class="section-tight">
+    <div class="container">
+      <div class="grid grid-2" style="align-items:start;">
+        <div>
+          <span class="eyebrow">Get in touch</span>
+          <h2>Contact CampusEats support</h2>
+          <p>Questions about an order, a vendor application, or becoming a courier? Reach the NBU CampusEats team below.</p>
+          <p class="mono" style="color:var(--green-deep);font-weight:600;">support@campuseats.nbu.edu.ng</p>
+          <p class="mono" style="color:var(--green-deep);font-weight:600;margin-top:-14px;">+234 800 CAMPUS EATS</p>
+          <div id="faqMiniList" style="margin-top:20px;"></div>
+        </div>
+        <div class="form-card" style="margin:0;">
+          <div class="form-msg" id="contactMsg">Thanks — your message has been received. The CampusEats team will reply within 24 hours.</div>
+          <form onsubmit="return submitContact(event)">
+            <div class="field"><label>Full name</label><input type="text" required></div>
+            <div class="field"><label>NBU email</label><input type="email" required placeholder="you@nbu.edu.ng"></div>
+            <div class="field"><label>I am a...</label>
+              <select><option>Student / Customer</option><option>Campus Vendor</option><option>Prospective Courier</option><option>Other</option></select>
+            </div>
+            <div class="field"><label>Message</label><textarea rows="4" required placeholder="How can we help?"></textarea></div>
+            <button class="btn btn-primary btn-block" type="submit">Send message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= LOGIN ============= -->
+<section class="view hidden" id="view-login">
+  <div class="section">
+    <div class="container">
+      <div class="form-card">
+        <div class="center" style="margin-bottom:20px;">
+          <span class="eyebrow">Closed-loop sign in</span>
+          <h2>Log in to CampusEats</h2>
+        </div>
+        <div class="form-msg" id="loginMsg">Signed in — this is a demo session, no real account is created.</div>
+        <div class="field-error" id="loginErr">Please use a verified @nbu.edu.ng or @nigerianbritishuniversity.edu.ng email address.</div>
+        <form onsubmit="return submitLogin(event)">
+          <div class="field"><label>NBU email</label><input type="email" id="loginEmail" required placeholder="you@nbu.edu.ng"></div>
+          <div class="field"><label>Password</label><input type="password" required placeholder="••••••••"></div>
+          <button class="btn btn-primary btn-block" type="submit">Log in</button>
+        </form>
+        <p class="center" style="margin-top:14px;font-size:13.5px;"><a href="#" style="color:var(--spice);font-weight:600;" onclick="toast('Password reset link sent to your NBU email.')">Forgot password?</a></p>
+        <p class="center" style="font-size:13.5px;">New here? <a href="#" data-view="register" style="color:var(--green-deep);font-weight:700;">Create an account</a></p>
+        <hr style="border:none;border-top:1px solid var(--line);margin:20px 0;">
+        <p class="field-hint center">Quick demo — preview a dashboard without logging in:</p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px;">
+          <button class="btn btn-outline btn-sm" onclick="showView('customer')">Customer</button>
+          <button class="btn btn-outline btn-sm" onclick="showView('vendor')">Vendor</button>
+          <button class="btn btn-outline btn-sm" onclick="showView('courier')">Courier</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= REGISTER ============= -->
+<section class="view hidden" id="view-register">
+  <div class="section">
+    <div class="container">
+      <div class="form-card" style="max-width:520px;">
+        <div class="center" style="margin-bottom:16px;">
+          <span class="eyebrow">Join the closed loop</span>
+          <h2>Create your account</h2>
+        </div>
+        <div class="tabs" id="regTabs" style="margin:0 auto 22px;">
+          <div class="tab active" data-role="student" onclick="setRegRole('student')">Student</div>
+          <div class="tab" data-role="vendor" onclick="setRegRole('vendor')">Vendor</div>
+          <div class="tab" data-role="courier" onclick="setRegRole('courier')">Courier</div>
+        </div>
+        <div class="form-msg" id="regMsg"></div>
+        <div class="field-error" id="regErr">Please use a verified @nbu.edu.ng or @nigerianbritishuniversity.edu.ng email address.</div>
+        <form onsubmit="return submitRegister(event)">
+          <div class="field"><label>Full name</label><input type="text" required></div>
+          <div class="field"><label>NBU email</label><input type="email" id="regEmail" required placeholder="you@nbu.edu.ng"></div>
+          <div class="field" id="regExtra"></div>
+          <div class="field"><label>Password</label><input type="password" required></div>
+          <button class="btn btn-primary btn-block" type="submit" id="regSubmitBtn">Register as Student</button>
+          <p class="field-hint center" style="margin-top:12px;" id="regFootnote">Your NBU email will be verified before you can order.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= CUSTOMER DASHBOARD ============= -->
+<section class="view hidden" id="view-customer">
+  <div class="section-tight">
+    <div class="container">
+      <span class="eyebrow">Customer dashboard</span>
+      <h2>Hi, Amaka 👋</h2>
+      <div class="demo-note">Demo mode — this dashboard uses sample data generated in your current session, including any orders you place from the Menu page.</div>
+      <div class="dash-shell">
+        <div class="dash-side">
+          <div class="who"><div class="name">Amaka Obi</div><div class="role mono">amaka.obi@nbu.edu.ng</div><span class="badge badge-green" style="margin-top:8px;">✓ NBU Verified</span></div>
+          <div class="dash-nav">
+            <a href="#" class="active" data-pane="c-track" onclick="setDashPane(this,'c-track')">Track current order</a>
+            <a href="#" data-pane="c-history" onclick="setDashPane(this,'c-history')">Order history</a>
+            <a href="#" data-pane="c-profile" onclick="setDashPane(this,'c-profile')">Profile</a>
+          </div>
+        </div>
+        <div>
+          <div class="dash-pane active" id="c-track">
+            <div id="customerTrackWrap"></div>
+          </div>
+          <div class="dash-pane" id="c-history">
+            <h3 style="margin-top:0;">Order history</h3>
+            <div id="customerHistory"></div>
+          </div>
+          <div class="dash-pane" id="c-profile">
+            <div class="card" style="max-width:460px;">
+              <h4>Profile</h4>
+              <div class="field"><label>Full name</label><input type="text" value="Amaka Obi"></div>
+              <div class="field"><label>NBU email</label><input type="text" value="amaka.obi@nbu.edu.ng" disabled></div>
+              <div class="field"><label>Default delivery zone</label>
+                <select><option>Girls Hostel — Building C, Block 2</option></select>
+              </div>
+              <button class="btn btn-outline" onclick="toast('Profile updated.')">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= VENDOR DASHBOARD ============= -->
+<section class="view hidden" id="view-vendor">
+  <div class="section-tight">
+    <div class="container">
+      <span class="eyebrow">Vendor dashboard</span>
+      <h2>Mama Chidinma's Kitchen</h2>
+      <div class="demo-note">Demo mode — sample vendor account. Orders placed for this vendor's menu items from the Menu page appear below in real time.</div>
+      <div class="dash-shell">
+        <div class="dash-side">
+          <div class="who"><div class="name">Mama Chidinma's Kitchen</div><div class="role mono">Nigerian · Local Dishes</div><span class="badge badge-green" style="margin-top:8px;">✓ Approved Vendor</span></div>
+          <div class="dash-nav">
+            <a href="#" class="active" data-pane="v-orders" onclick="setDashPane(this,'v-orders')">Incoming orders</a>
+            <a href="#" data-pane="v-menu" onclick="setDashPane(this,'v-menu')">Menu management</a>
+            <a href="#" data-pane="v-sales" onclick="setDashPane(this,'v-sales')">Sales reports</a>
+            <a href="#" data-pane="v-profile" onclick="setDashPane(this,'v-profile')">Vendor profile</a>
+          </div>
+        </div>
+        <div>
+          <div class="dash-pane active" id="v-orders">
+            <div class="kpi-row">
+              <div class="kpi"><div class="v" id="vKpiIncoming">0</div><div class="l">Incoming orders</div></div>
+              <div class="kpi"><div class="v" id="vKpiReady">0</div><div class="l">Awaiting courier</div></div>
+              <div class="kpi"><div class="v" id="vKpiToday">₦0</div><div class="l">Revenue today</div></div>
+            </div>
+            <div id="vendorOrders"></div>
+          </div>
+          <div class="dash-pane" id="v-menu">
+            <div class="flex-between" style="margin-bottom:16px;">
+              <h3 style="margin:0;">Menu items</h3>
+              <button class="btn btn-primary btn-sm" onclick="addMenuItem()">+ Add item</button>
+            </div>
+            <div id="vendorMenuList"></div>
+          </div>
+          <div class="dash-pane" id="v-sales">
+            <h3 style="margin-top:0;">Sales this week</h3>
+            <div class="card">
+              <div class="bar-chart" id="salesChart"></div>
+            </div>
+          </div>
+          <div class="dash-pane" id="v-profile">
+            <div class="card" style="max-width:460px;">
+              <h4>Vendor profile</h4>
+              <div class="field"><label>Vendor name</label><input type="text" value="Mama Chidinma's Kitchen"></div>
+              <div class="field"><label>Category</label><input type="text" value="Nigerian · Local Dishes"></div>
+              <div class="field"><label>Zone</label><select><option>General Faculty (Administrative Building)</option></select></div>
+              <div class="field"><label>Status</label><input type="text" value="Open for orders"></div>
+              <button class="btn btn-outline" onclick="toast('Vendor profile updated.')">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= COURIER DASHBOARD ============= -->
+<section class="view hidden" id="view-courier">
+  <div class="section-tight">
+    <div class="container">
+      <span class="eyebrow">Courier dashboard</span>
+      <h2>Welcome back, Tunde</h2>
+      <div class="demo-note">Demo mode — claim a ready order below, then confirm delivery with the customer's OTP to record an earning.</div>
+      <div class="dash-shell">
+        <div class="dash-side">
+          <div class="who"><div class="name">Tunde Bakare</div><div class="role mono">Andy Hall · Block 2</div><span class="badge badge-green" style="margin-top:8px;">✓ Verified Courier</span></div>
+          <div class="dash-nav">
+            <a href="#" class="active" data-pane="k-available" onclick="setDashPane(this,'k-available')">Available orders</a>
+            <a href="#" data-pane="k-mine" onclick="setDashPane(this,'k-mine')">My deliveries</a>
+            <a href="#" data-pane="k-earn" onclick="setDashPane(this,'k-earn')">Earnings</a>
+            <a href="#" data-pane="k-history" onclick="setDashPane(this,'k-history')">Delivery history</a>
+          </div>
+        </div>
+        <div>
+          <div class="dash-pane active" id="k-available">
+            <h3 style="margin-top:0;">Orders ready for pickup</h3>
+            <p class="field-hint" style="margin-top:-10px;">Routes are grouped by NBU delivery zone so you can claim what's on your path.</p>
+            <div id="courierAvailable"></div>
+          </div>
+          <div class="dash-pane" id="k-mine">
+            <h3 style="margin-top:0;">My active deliveries</h3>
+            <div id="courierMine"></div>
+          </div>
+          <div class="dash-pane" id="k-earn">
+            <div class="kpi-row">
+              <div class="kpi"><div class="v" id="kEarnTotal">₦0</div><div class="l">Total earnings</div></div>
+              <div class="kpi"><div class="v" id="kEarnCount">0</div><div class="l">Deliveries completed</div></div>
+              <div class="kpi"><div class="v">70%</div><div class="l">Your split per order</div></div>
+            </div>
+            <div class="card">
+              <h4>How earnings work</h4>
+              <p style="margin-bottom:0;">Each order carries a flat ₦150 service fee. You keep 70% (₦105) per delivery — paid out weekly to your NBU-linked wallet.</p>
+            </div>
+          </div>
+          <div class="dash-pane" id="k-history">
+            <h3 style="margin-top:0;">Completed deliveries</h3>
+            <div id="courierHistory"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= TERMS / PRIVACY / REFUND ============= -->
+<section class="view hidden" id="view-terms">
+  <div class="section-tight"><div class="container policy-content" style="max-width:760px;">
+    <span class="eyebrow">Legal</span>
+    <h2>Terms and Conditions</h2>
+    <p>These terms govern use of CampusEats, a closed-loop food ordering and delivery platform available only to verified members of the Nigerian British University community.</p>
+    <h3>1. Eligibility</h3>
+    <p>Access is limited to individuals with a valid NBU email address or verified NBU student ID. CampusEats reserves the right to suspend accounts that cannot be verified or that are used outside their intended role.</p>
+    <h3>2. Orders and payment</h3>
+    <p>Customers agree to pay the listed price for menu items plus the applicable service fee at checkout. Vendors are responsible for the accuracy of their menu listings and pricing.</p>
+    <h3>3. Courier conduct</h3>
+    <p>Couriers must deliver orders to the correct zone and node, and confirm delivery using the customer's one-time code. Misuse of the courier role may result in suspension.</p>
+    <h3>4. Platform role</h3>
+    <p>CampusEats facilitates the connection between customers, vendors, and couriers. It does not prepare food and is not liable for food quality, except as set out in the Refund Policy.</p>
+    <h3>5. Changes to these terms</h3>
+    <p>CampusEats may update these terms from time to time. Continued use of the platform after changes take effect constitutes acceptance.</p>
+  </div></div>
+</section>
+<section class="view hidden" id="view-privacy">
+  <div class="section-tight"><div class="container policy-content" style="max-width:760px;">
+    <span class="eyebrow">Legal</span>
+    <h2>Privacy Policy</h2>
+    <p>CampusEats collects only the information needed to operate a closed-loop delivery service for NBU: your NBU email, student ID (where applicable), delivery zone, order history, and — for couriers and vendors — payout details.</p>
+    <h3>What we collect</h3>
+    <ul>
+      <li>Account details: name, NBU email, role (student, vendor, courier)</li>
+      <li>Order data: items ordered, delivery zone, order status and timestamps</li>
+      <li>Verification data: NBU email domain or student ID used for account approval</li>
+    </ul>
+    <h3>How we use it</h3>
+    <p>Data is used to route orders to the correct vendor and courier, verify eligibility, and generate the sales and earnings reports shown in vendor and courier dashboards. We do not sell personal data to third parties.</p>
+    <h3>Data retention</h3>
+    <p>Order and account data is retained only as long as needed to operate the platform and resolve disputes, after which it is deleted or anonymised.</p>
+  </div></div>
+</section>
+<section class="view hidden" id="view-refund">
+  <div class="section-tight"><div class="container policy-content" style="max-width:760px;">
+    <span class="eyebrow">Legal</span>
+    <h2>Refund Policy</h2>
+    <p>CampusEats wants every order delivered correctly and on time. If something goes wrong, here's how refunds are handled.</p>
+    <h3>Eligible for a refund</h3>
+    <ul>
+      <li>Order marked Delivered but never received at your zone</li>
+      <li>Wrong items delivered, or items missing from your order</li>
+      <li>Order cancelled by the vendor after payment</li>
+    </ul>
+    <h3>Not eligible for a refund</h3>
+    <ul>
+      <li>Change of mind after the vendor has marked the order Preparing</li>
+      <li>Incorrect delivery zone entered by the customer at checkout</li>
+    </ul>
+    <h3>How to request one</h3>
+    <p>Contact support with your order ID within 24 hours of delivery. Approved refunds are credited back to your original payment method within 3–5 business days.</p>
+  </div></div>
+</section>
+
+</main>
+
+<!-- Cart drawer -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-head">
+    <h3 style="margin:0;font-size:18px;">Your cart</h3>
+    <button class="btn btn-ghost btn-sm" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot">
+    <div class="cart-total-row sub"><span>Subtotal</span><span id="cartSub">₦0</span></div>
+    <div class="cart-total-row sub"><span>Delivery fee (on campus)</span><span>₦0</span></div>
+    <div class="cart-total-row sub"><span>Service fee</span><span id="cartFee">₦150</span></div>
+    <div class="cart-total-row" style="margin-top:8px;"><span>Total</span><span id="cartTotal">₦0</span></div>
+    <div class="field" style="margin-top:14px;">
+      <label>Deliver to</label>
+      <select id="cartZone">
+        <option>Andy Hall — Building A, Block 1</option>
+        <option>St. Louis — Building B, Block 1</option>
+        <option>Girls Hostel — Building C, Block 1</option>
+        <option>Law Faculty — Main Building, Floor 1</option>
+        <option>ICT Centre — Tech Building, Floor 1</option>
+        <option>General Faculty — Administrative Building</option>
+      </select>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="checkout()">Checkout</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<footer class="site">
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="margin-bottom:10px;">
+          <svg viewBox="0 0 40 44" width="30" height="30"><rect x="1" y="1" width="38" height="30" rx="10" fill="#F0A93E"/><g stroke="#163A2B" stroke-width="2" stroke-linecap="round"><line x1="12" y1="8" x2="12" y2="16"/><line x1="9" y1="8" x2="9" y2="13"/><line x1="15" y1="8" x2="15" y2="13"/><line x1="12" y1="16" x2="12" y2="27"/></g><g stroke="#163A2B" stroke-width="2" stroke-linecap="round" fill="none"><ellipse cx="27" cy="11" rx="4" ry="5"/><line x1="27" y1="16" x2="27" y2="27"/></g></svg>
+          <span class="brand-name">CampusEats</span>
+        </div>
+        <p style="max-width:280px;">Closed-loop, secure food delivery for Nigerian British University students, vendors, and couriers.</p>
+        <div class="security-badge">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2L4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z" stroke="#F0A93E" stroke-width="1.6"/></svg>
+          <span><span class="t1">Closed-Loop Secure</span><span class="t2" style="display:block;">100% NBU-verified users</span></span>
+        </div>
+      </div>
+      <div>
+        <h4>Platform</h4>
+        <a href="#" data-view="menu">Menu</a>
+        <a href="#" data-view="zones">Delivery Zones</a>
+        <a href="#" data-view="how">How It Works</a>
+        <a href="#" data-view="blog">Blog</a>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a href="#" data-view="about">About Us</a>
+        <a href="#" data-view="contact">Contact</a>
+        <a href="#" data-view="faq">FAQ</a>
+        <a href="#" data-view="register">Become a Courier</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a href="#" data-view="terms">Terms &amp; Conditions</a>
+        <a href="#" data-view="privacy">Privacy Policy</a>
+        <a href="#" data-view="refund">Refund Policy</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 CampusEats · Nigerian British University. Built for students, by students.</span>
+      <span class="mono">70% Courier · 15% Vendor · 15% Platform</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================= DATA ============================= */
+const ZONES = [
+  {name:'Andy Hall Boys Hostel', detail:'Building A, Blocks 1–4', lat:'6.4510° N', lng:'3.4528° E'},
+  {name:'St. Louis Boys Hostel', detail:'Building B, Blocks 1–3', lat:'6.4515° N', lng:'3.4520° E'},
+  {name:'Girls Hostel', detail:'Building C, Blocks 1–5', lat:'6.4508° N', lng:'3.4535° E'},
+  {name:'Law Faculty', detail:'Main Building, Floors 1–3', lat:'6.4505° N', lng:'3.4518° E'},
+  {name:'ICT Centre', detail:'Tech Building, Floors 1–2', lat:'6.4520° N', lng:'3.4515° E'},
+  {name:'General Faculty', detail:'Administrative Building', lat:'6.4500° N', lng:'3.4525° E'},
+];
+
+const VENDORS = [
+  {id:'v1',name:"Mama Chidinma's Kitchen",cat:'Nigerian · Local Dishes',zone:'General Faculty',rating:4.8,emoji:'🍲'},
+  {id:'v2',name:'Suya Junction',cat:'Grill · Suya · Peppered Meat',zone:'Andy Hall',rating:4.9,emoji:'🍢'},
+  {id:'v3',name:'Jollof Hub',cat:'Rice Specialists',zone:'St. Louis',rating:4.7,emoji:'🍚'},
+  {id:'v4',name:'Amala Palace',cat:'Swallow & Soups',zone:'ICT Centre',rating:4.6,emoji:'🥣'},
+  {id:'v5',name:'Campus Bakery & Confectionery',cat:'Bread · Pastries · Meat Pie',zone:'Law Faculty',rating:4.8,emoji:'🥐'},
+  {id:'v6',name:'Shawarma Express NBU',cat:'Shawarma · Wraps',zone:'Girls Hostel',rating:4.7,emoji:'🌯'},
+  {id:'v7',name:'Smoothie Lab',cat:'Juices · Smoothies · Zobo',zone:'Andy Hall',rating:4.9,emoji:'🥤'},
+  {id:'v8',name:'Pepper Soup Point',cat:'Pepper Soup · Grills',zone:'St. Louis',rating:4.5,emoji:'🌶️'},
+  {id:'v9',name:'Rice & Spice',cat:'Fried Rice · Native Rice',zone:'General Faculty',rating:4.6,emoji:'🍛'},
+  {id:'v10',name:'Noodle Nation',cat:'Indomie Specials · Egg',zone:'Girls Hostel',rating:4.4,emoji:'🍜'},
+  {id:'v11',name:'Akara & Custard Corner',cat:'Breakfast Specialists',zone:'Law Faculty',rating:4.7,emoji:'🍳'},
+  {id:'v12',name:'Moi Moi Central',cat:'Moi Moi · Sides',zone:'ICT Centre',rating:4.5,emoji:'🫘'},
+  {id:'v13',name:'Grill & Chill',cat:'Chicken · Chips · Grills',zone:'Andy Hall',rating:4.8,emoji:'🍗'},
+  {id:'v14',name:'Puff Puff Palace',cat:'Puff Puff · Chin Chin',zone:'General Faculty',rating:4.9,emoji:'🍩'},
+  {id:'v15',name:'Chapman Café',cat:'Drinks · Mocktails',zone:'St. Louis',rating:4.6,emoji:'🍹'},
+];
+
+const MENU = [
+  {id:'m1',vendor:'v1',name:'Jollof Rice & Grilled Chicken',cat:'lunch',price:1800,desc:'Smoky party-style jollof with grilled chicken and coleslaw.'},
+  {id:'m2',vendor:'v1',name:'Egusi Soup & Pounded Yam',cat:'dinner',price:2000,desc:'Rich egusi soup with assorted meat, served with pounded yam.'},
+  {id:'m3',vendor:'v2',name:'Beef Suya (10 sticks)',cat:'snacks',price:1500,desc:'Spicy grilled beef skewers with yaji spice and onions.'},
+  {id:'m4',vendor:'v2',name:'Peppered Chicken Wings',cat:'dinner',price:2200,desc:'Grilled wings tossed in fresh pepper sauce.'},
+  {id:'m5',vendor:'v3',name:'Native Jollof Rice',cat:'lunch',price:1600,desc:'Palm-oil native jollof with smoked fish.'},
+  {id:'m6',vendor:'v3',name:'Fried Rice & Turkey',cat:'lunch',price:2100,desc:'Vegetable fried rice with a crispy turkey portion.'},
+  {id:'m7',vendor:'v4',name:'Amala & Ewedu & Gbegiri',cat:'lunch',price:1900,desc:'Classic amala combo with assorted meat.'},
+  {id:'m8',vendor:'v5',name:'Meat Pie (2 pieces)',cat:'snacks',price:900,desc:'Flaky pastry filled with seasoned minced meat.'},
+  {id:'m9',vendor:'v5',name:'Chin Chin Pack',cat:'snacks',price:700,desc:'Crunchy sweet fried pastry snack, 250g pack.'},
+  {id:'m10',vendor:'v6',name:'Chicken Shawarma',cat:'dinner',price:2000,desc:'Loaded shawarma wrap with chicken, sauces and veg.'},
+  {id:'m11',vendor:'v7',name:'Zobo Drink (1L)',cat:'breakfast',price:800,desc:'Chilled hibiscus zobo with ginger and pineapple.'},
+  {id:'m12',vendor:'v7',name:'Mixed Fruit Smoothie',cat:'breakfast',price:1300,desc:'Banana, pineapple and watermelon blended smoothie.'},
+  {id:'m13',vendor:'v8',name:'Goat Meat Pepper Soup',cat:'dinner',price:2300,desc:'Hot spicy pepper soup with tender goat meat.'},
+  {id:'m14',vendor:'v9',name:'Coconut Fried Rice',cat:'lunch',price:1900,desc:'Fried rice cooked in coconut milk with prawns.'},
+  {id:'m15',vendor:'v10',name:'Indomie Special with Egg & Sausage',cat:'breakfast',price:1200,desc:'Loaded indomie noodles with fried egg and sausage.'},
+  {id:'m16',vendor:'v11',name:'Akara & Pap',cat:'breakfast',price:900,desc:'Bean cakes served with warm corn pap.'},
+  {id:'m17',vendor:'v11',name:'Bread & Egg Sauce',cat:'breakfast',price:1000,desc:'Agege bread with spicy egg sauce.'},
+  {id:'m18',vendor:'v12',name:'Moi Moi & Fried Plantain',cat:'lunch',price:1400,desc:'Steamed bean pudding with sweet dodo.'},
+  {id:'m19',vendor:'v13',name:'Grilled Chicken & Chips',cat:'dinner',price:2400,desc:'Half grilled chicken with seasoned chips.'},
+  {id:'m20',vendor:'v14',name:'Puff Puff (10 pieces)',cat:'snacks',price:800,desc:'Soft, sweet deep-fried dough balls.'},
+  {id:'m21',vendor:'v15',name:'Chapman (Non-Alcoholic)',cat:'snacks',price:1100,desc:'Classic fruity Nigerian mocktail, chilled.'},
+  {id:'m22',vendor:'v9',name:'Ofada Rice & Ayamase Sauce',cat:'lunch',price:2100,desc:'Local ofada rice with spicy green pepper sauce.'},
+  {id:'m23',vendor:'v4',name:'Semo & Vegetable Soup',cat:'dinner',price:1800,desc:'Smooth semovita with efo riro and assorted meat.'},
+  {id:'m24',vendor:'v2',name:'Assorted Suya Platter',cat:'dinner',price:2800,desc:'Beef, chicken and kidney suya sharing platter.'},
+];
+
+const BLOG = [
+  {title:'CampusEats crosses 50 verified couriers on NBU campus',date:'Jun 28, 2026',excerpt:'A milestone for the courier network — more coverage across Andy Hall, St. Louis and the Girls Hostel zones during peak dinner hours.'},
+  {title:'Five vendors just joined the General Faculty node',date:'Jun 14, 2026',excerpt:'From Puff Puff Palace to Rice & Spice, here is what is new near the Administrative Building this semester.'},
+  {title:'How the OTP delivery confirmation keeps orders safe',date:'May 30, 2026',excerpt:'A short walkthrough of why every CampusEats delivery ends with a one-time code, and how it protects students and couriers.'},
+  {title:'Exam season menu: quick bites under ₦1,500',date:'May 12, 2026',excerpt:'Fast, affordable options from across campus vendors for late-night study sessions.'},
+];
+
+const FAQ = [
+  {q:'Who can use CampusEats?',a:'Only verified members of the NBU community — students, approved campus vendors, and verified student couriers. Every account is checked against an NBU email or student ID.'},
+  {q:'Is delivery really free?',a:'Yes — there is no delivery fee for orders within NBU campus zones. A flat ₦150 service fee applies per order to cover courier earnings and platform operations.'},
+  {q:'How do I confirm my order was delivered?',a:'Every order generates a one-time OTP code. Share it with your courier only when the food is in your hands — they enter it to mark the order Delivered.'},
+  {q:'Can I become a courier?',a:'Yes — register with the Courier role using your NBU email. Once verified, you can claim ready orders in zones near you and earn 70% of the service fee per delivery.'},
+  {q:'How do vendors join CampusEats?',a:'Vendors register and go through an approval step before their menu goes live, to confirm they operate on or near NBU campus.'},
+  {q:'What if my order arrives wrong or incomplete?',a:'Contact support with your order ID within 24 hours. See our Refund Policy for what qualifies for a refund.'},
+];
+
+const TESTIMONIALS = [
+  {quote:'I order from Suya Junction between lectures and it gets to my hostel block before I am even back from ICT Centre.',who:'Amaka O.',role:'300L, Law Faculty'},
+  {quote:'As a courier I make more here than my old delivery gig off-campus, and I know every customer is a fellow student.',who:'Tunde B.',role:'Courier, Andy Hall'},
+  {quote:'The OTP confirmation means no more disputes about whether an order arrived. It has cut our complaints to almost zero.',who:'Mama Chidinma',role:'Vendor'},
+  {quote:'Zero delivery fee on campus is the real win. I use my food budget on food, not on getting it to my room.',who:'Chidi E.',role:'200L, Girls Hostel'},
+];
+
+/* ============================= STATE ============================= */
+let state = {
+  cart: [],           // {itemId, qty}
+  cartVendor: null,
+  orders: [],
+  vendorMenu: JSON.parse(JSON.stringify(MENU.filter(m=>m.vendor==='v1'))),
+  courierEarnings: 0,
+  courierDeliveries: 0,
+  activeCat: 'all',
+};
+let orderCounter = 4821;
+
+/* ============================= NAV / ROUTING ============================= */
+function showView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.add('hidden'));
+  const target = document.getElementById('view-'+name);
+  if(target) target.classList.remove('hidden');
+  document.querySelectorAll('nav.links a').forEach(a=>a.classList.toggle('active', a.dataset.view===name));
+  document.getElementById('navLinks').classList.remove('open');
+  window.scrollTo({top:0,behavior:'instant' in window ? 'instant':'auto'});
+  if(name==='menu') renderMenuItems();
+  if(name==='zones') renderZones();
+  if(name==='blog') renderBlogList();
+  if(name==='faq') renderFaq();
+  if(name==='contact') renderFaqMini();
+  if(name==='home') { renderFeaturedVendors(); renderTestimonials(); }
+  if(name==='customer') renderCustomerDash();
+  if(name==='vendor') renderVendorDash();
+  if(name==='courier') renderCourierDash();
+}
+document.addEventListener('click', function(e){
+  const el = e.target.closest('[data-view]');
+  if(el){ e.preventDefault(); showView(el.dataset.view); }
+});
+
+/* ============================= TOAST ============================= */
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+/* ============================= RENDER: HOME ============================= */
+function renderFeaturedVendors(){
+  const wrap = document.getElementById('featuredVendors');
+  wrap.innerHTML = VENDORS.slice(0,8).map(v=>`
+    <div class="card vendor-card">
+      <div class="thumb">${v.emoji}</div>
+      <h4>${v.name}</h4>
+      <p style="margin:0;font-size:13px;">${v.cat}</p>
+      <div class="badge-row">
+        <span class="rating">★ ${v.rating}</span>
+      </div>
+      <div class="zone-tag">📍 ${v.zone}</div>
+    </div>
+  `).join('');
+}
+function renderTestimonials(){
+  document.getElementById('homeTestimonials').innerHTML = TESTIMONIALS.map(t=>`
+    <div class="tcard"><p class="quote">"${t.quote}"</p><div class="who">${t.who}<span>${t.role}</span></div></div>
+  `).join('');
+}
+
+/* ============================= RENDER: MENU ============================= */
+function setCat(cat){
+  state.activeCat = cat;
+  document.querySelectorAll('#catFilters .chip').forEach(c=>c.classList.toggle('active', c.dataset.cat===cat));
+  renderMenuItems();
+}
+function renderMenuItems(){
+  const q = (document.getElementById('menuSearch')?.value || '').toLowerCase();
+  let items = MENU.filter(m => (state.activeCat==='all' || m.cat===state.activeCat) && m.name.toLowerCase().includes(q));
+  const wrap = document.getElementById('menuItems');
+  if(items.length===0){ wrap.innerHTML = '<div class="empty-state">No dishes match your search. Try another keyword.</div>'; return; }
+  wrap.innerHTML = items.map(m=>{
+    const vendor = VENDORS.find(v=>v.id===m.vendor);
+    const qty = (state.cart.find(c=>c.itemId===m.id)||{}).qty || 0;
+    return `
+    <div class="menu-card">
+      <div class="emoji">${vendor.emoji}</div>
+      <div class="info">
+        <h4>${m.name}</h4>
+        <p class="desc">${m.desc}</p>
+        <div class="field-hint">${vendor.name} · ${vendor.zone}</div>
+        <div class="price">₦${m.price.toLocaleString()}</div>
+      </div>
+      <div class="qty-add">
+        ${qty>0 ? `<button class="qty-btn" onclick="changeQty('${m.id}',-1)">−</button><span class="qty-num">${qty}</span><button class="qty-btn" onclick="changeQty('${m.id}',1)">+</button>`
+        : `<button class="btn btn-outline btn-sm" onclick="addToCart('${m.id}')">Add</button>`}
+      </div>
+    </div>`;
+  }).join('');
+  const note = document.getElementById('cartVendorNote');
+  note.textContent = state.cartVendor ? `Your cart currently has items from ${VENDORS.find(v=>v.id===state.cartVendor).name}. Adding from another vendor will start a new cart.` : '';
+}
+
+/* ============================= CART ============================= */
+function addToCart(itemId){
+  const item = MENU.find(m=>m.id===itemId);
+  if(state.cartVendor && state.cartVendor!==item.vendor){
+    if(!confirm('Your cart has items from another vendor. Clear cart and add this item instead?')) return;
+    state.cart = [];
+  }
+  state.cartVendor = item.vendor;
+  const line = state.cart.find(c=>c.itemId===itemId);
+  if(line) line.qty++; else state.cart.push({itemId,qty:1});
+  updateCartUI();
+  renderMenuItems();
+  toast(item.name+' added to cart');
+}
+function changeQty(itemId, delta){
+  const line = state.cart.find(c=>c.itemId===itemId);
+  if(!line) return;
+  line.qty += delta;
+  if(line.qty<=0) state.cart = state.cart.filter(c=>c.itemId!==itemId);
+  if(state.cart.length===0) state.cartVendor = null;
+  updateCartUI();
+  renderMenuItems();
+}
+function cartSubtotal(){
+  return state.cart.reduce((sum,c)=>{
+    const item = MENU.find(m=>m.id===c.itemId);
+    return sum + item.price*c.qty;
+  },0);
+}
+function updateCartUI(){
+  const count = state.cart.reduce((s,c)=>s+c.qty,0);
+  document.getElementById('cartCount').textContent = count;
+  const wrap = document.getElementById('cartItems');
+  if(state.cart.length===0){
+    wrap.innerHTML = '<div class="empty-state">Your cart is empty.<br>Browse the menu to add something tasty.</div>';
+  } else {
+    wrap.innerHTML = state.cart.map(c=>{
+      const item = MENU.find(m=>m.id===c.itemId);
+      return `<div class="cart-line">
+        <div><div class="name">${item.name}</div><div class="sub">₦${item.price.toLocaleString()} × ${c.qty}</div></div>
+        <div class="qty-add">
+          <button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button>
+          <span class="qty-num">${c.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${item.id}',1)">+</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  const sub = cartSubtotal();
+  const fee = state.cart.length ? 150 : 0;
+  document.getElementById('cartSub').textContent = '₦'+sub.toLocaleString();
+  document.getElementById('cartFee').textContent = '₦'+fee;
+  document.getElementById('cartTotal').textContent = '₦'+(sub+fee).toLocaleString();
+}
+function openCart(){ document.getElementById('cartDrawer').classList.add('open'); document.getElementById('overlay').classList.add('open'); }
+function closeCart(){ document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
+
+function checkout(){
+  if(state.cart.length===0){ toast('Your cart is empty.'); return; }
+  const zone = document.getElementById('cartZone').value;
+  const sub = cartSubtotal();
+  const order = {
+    id: 'CE-'+(orderCounter++),
+    vendorId: state.cartVendor,
+    items: state.cart.map(c=>({...MENU.find(m=>m.id===c.itemId), qty:c.qty})),
+    subtotal: sub,
+    fee: 150,
+    total: sub+150,
+    zone,
+    status: 'Placed',
+    otp: String(Math.floor(1000+Math.random()*9000)),
+    courier: null,
+    createdAt: new Date(),
+  };
+  state.orders.unshift(order);
+  state.cart = [];
+  state.cartVendor = null;
+  updateCartUI();
+  closeCart();
+  toast('Order placed! Track it from your Customer dashboard.');
+  showView('customer');
+  progressOrder(order);
+}
+function progressOrder(order){
+  setTimeout(()=>{ if(order.status==='Placed'){ order.status='Preparing'; refreshAllDashboards(); } }, 4000);
+  setTimeout(()=>{ if(order.status==='Preparing'){ order.status='Ready'; refreshAllDashboards(); toast('Order '+order.id+' is ready — a courier can now claim it.'); } }, 9000);
+}
+function refreshAllDashboards(){
+  const cView = document.getElementById('view-customer');
+  if(cView && !cView.classList.contains('hidden')) renderCustomerDash();
+  const vView = document.getElementById('view-vendor');
+  if(vView && !vView.classList.contains('hidden')) renderVendorDash();
+  const kView = document.getElementById('view-courier');
+  if(kView && !kView.classList.contains('hidden')) renderCourierDash();
+}
+
+/* ============================= SEARCH ============================= */
+function doSearch(e){
+  e.preventDefault();
+  const q = document.getElementById('heroSearch').value;
+  showView('menu');
+  setTimeout(()=>{ document.getElementById('menuSearch').value = q; renderMenuItems(); }, 0);
+  return false;
+}
+
+/* ============================= ZONES ============================= */
+function renderZones(){
+  document.getElementById('zoneList').innerHTML = ZONES.map(z=>`
+    <div class="zone-row">
+      <div><strong>${z.name}</strong><div class="field-hint" style="margin-top:2px;">${z.detail}</div></div>
+      <div class="coords">${z.lat}, ${z.lng}</div>
+    </div>
+  `).join('');
+}
+
+/* ============================= BLOG / FAQ ============================= */
+function renderBlogList(){
+  document.getElementById('blogList').innerHTML = BLOG.map(b=>`
+    <div class="card blog-card">
+      <div class="date">${b.date}</div>
+      <h4>${b.title}</h4>
+      <p style="margin:0;">${b.excerpt}</p>
+    </div>
+  `).join('');
+}
+function renderFaq(){
+  document.getElementById('faqList').innerHTML = FAQ.map((f,i)=>`
+    <div class="faq-item" id="faq-${i}">
+      <button class="faq-q" onclick="toggleFaq(${i})"><span>${f.q}</span><span class="faq-plus">+</span></button>
+      <div class="faq-a"><p>${f.a}</p></div>
+    </div>
+  `).join('');
+}
+function renderFaqMini(){
+  document.getElementById('faqMiniList').innerHTML = FAQ.slice(0,3).map((f,i)=>`
+    <div class="faq-item" id="faqm-${i}">
+      <button class="faq-q" onclick="toggleFaqMini(${i})"><span>${f.q}</span><span class="faq-plus">+</span></button>
+      <div class="faq-a"><p>${f.a}</p></div>
+    </div>
+  `).join('');
+}
+function toggleFaq(i){ document.getElementById('faq-'+i).classList.toggle('open'); }
+function toggleFaqMini(i){ document.getElementById('faqm-'+i).classList.toggle('open'); }
+
+/* ============================= FORMS ============================= */
+function isNbuEmail(email){
+  return /@(nbu\.edu\.ng|nigerianbritishuniversity\.edu\.ng)$/i.test(email.trim());
+}
+function submitLogin(e){
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const msg = document.getElementById('loginMsg'), err = document.getElementById('loginErr');
+  if(!isNbuEmail(email)){ err.style.display='block'; msg.style.display='none'; return false; }
+  err.style.display='none'; msg.style.display='block';
+  setTimeout(()=>showView('customer'), 900);
+  return false;
+}
+function setRegRole(role){
+  document.querySelectorAll('#regTabs .tab').forEach(t=>t.classList.toggle('active', t.dataset.role===role));
+  const extra = document.getElementById('regExtra');
+  const btn = document.getElementById('regSubmitBtn');
+  const foot = document.getElementById('regFootnote');
+  if(role==='student'){
+    extra.innerHTML = `<label>Student ID (optional)</label><input type="text" placeholder="NBU/2024/00123">`;
+    btn.textContent = 'Register as Student';
+    foot.textContent = 'Your NBU email will be verified before you can order.';
+  } else if(role==='vendor'){
+    extra.innerHTML = `<label>Vendor / stall name</label><input type="text" required placeholder="e.g. Suya Junction">`;
+    btn.textContent = 'Apply as Vendor';
+    foot.textContent = 'Vendor accounts go through an approval step before your menu goes live.';
+  } else {
+    extra.innerHTML = `<label>Preferred delivery zone</label><select><option>Andy Hall</option><option>St. Louis</option><option>Girls Hostel</option><option>Law Faculty</option><option>ICT Centre</option><option>General Faculty</option></select>`;
+    btn.textContent = 'Apply as Courier';
+    foot.textContent = 'Courier accounts require NBU student verification before you can claim deliveries.';
+  }
+  document.getElementById('regMsg').style.display='none';
+}
+function submitRegister(e){
+  e.preventDefault();
+  const email = document.getElementById('regEmail').value;
+  const err = document.getElementById('regErr'), msg = document.getElementById('regMsg');
+  if(!isNbuEmail(email)){ err.style.display='block'; msg.style.display='none'; return false; }
+  err.style.display='none';
+  const role = document.querySelector('#regTabs .tab.active').dataset.role;
+  msg.textContent = role==='student' ? 'Account created — check your NBU email to verify.' : 'Application received — you will be notified once approved.';
+  msg.style.display='block';
+  return false;
+}
+function submitContact(e){
+  e.preventDefault();
+  document.getElementById('contactMsg').style.display='block';
+  e.target.reset();
+  return false;
+}
+
+/* ============================= DASHBOARDS ============================= */
+function setDashPane(el, paneId){
+  const nav = el.closest('.dash-nav');
+  nav.querySelectorAll('a').forEach(a=>a.classList.remove('active'));
+  el.classList.add('active');
+  const shell = el.closest('.dash-shell');
+  shell.querySelectorAll('.dash-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById(paneId).classList.add('active');
+}
+
+const STAGES = ['Placed','Preparing','Ready','Dispatched','Delivered'];
+function stepperHTML(status){
+  const idx = STAGES.indexOf(status);
+  return '<div class="stepper">'+STAGES.map((s,i)=>{
+    const cls = i<idx ? 'done' : (i===idx ? 'current' : '');
+    const mark = i<idx ? '✓' : (i+1);
+    return `<div class="st ${cls}"><div class="dot">${mark}</div><div class="st-label">${s}</div></div>`;
+  }).join('')+'</div>';
+}
+
+function renderCustomerDash(){
+  const wrap = document.getElementById('customerTrackWrap');
+  const live = state.orders.find(o=>o.status!=='Delivered');
+  if(!live){
+    wrap.innerHTML = '<div class="empty-state">No active order right now.<br><a href="#" data-view="menu" class="btn btn-primary btn-sm" style="margin-top:14px;">Order something</a></div>';
+  } else {
+    wrap.innerHTML = `
+      <div class="card">
+        <div class="flex-between">
+          <h4 style="margin:0;">Order ${live.id}</h4>
+          <span class="status-pill status-${live.status}">${live.status}</span>
+        </div>
+        <p class="field-hint">Deliver to: ${live.zone}</p>
+        ${stepperHTML(live.status)}
+        <p class="field-hint">Your delivery confirmation code — only share this with your courier at the door:</p>
+        <div class="otp-box">${live.otp}</div>
+        <hr style="border:none;border-top:1px solid var(--line);margin:18px 0;">
+        ${live.items.map(it=>`<div class="cart-line"><span>${it.name} × ${it.qty}</span><span class="mono">₦${(it.price*it.qty).toLocaleString()}</span></div>`).join('')}
+        <div class="cart-total-row" style="margin-top:10px;"><span>Total</span><span>₦${live.total.toLocaleString()}</span></div>
+      </div>`;
+  }
+  const hist = document.getElementById('customerHistory');
+  if(state.orders.length===0){ hist.innerHTML='<div class="empty-state">No orders yet.</div>'; }
+  else {
+    hist.innerHTML = `<table class="tbl"><thead><tr><th>Order</th><th>Items</th><th>Zone</th><th>Total</th><th>Status</th></tr></thead><tbody>
+      ${state.orders.map(o=>`<tr><td class="mono">${o.id}</td><td>${o.items.map(i=>i.name).join(', ')}</td><td>${o.zone.split('—')[0].trim()}</td><td class="mono">₦${o.total.toLocaleString()}</td><td><span class="status-pill status-${o.status}">${o.status}</span></td></tr>`).join('')}
+    </tbody></table>`;
+  }
+}
+
+function renderVendorDash(){
+  const myOrders = state.orders.filter(o=>o.vendorId==='v1');
+  document.getElementById('vKpiIncoming').textContent = myOrders.filter(o=>o.status==='Placed'||o.status==='Preparing').length;
+  document.getElementById('vKpiReady').textContent = myOrders.filter(o=>o.status==='Ready').length;
+  document.getElementById('vKpiToday').textContent = '₦'+myOrders.reduce((s,o)=>s+o.total,0).toLocaleString();
+  const wrap = document.getElementById('vendorOrders');
+  if(myOrders.length===0){
+    wrap.innerHTML = "<div class=\"empty-state\">No incoming orders yet. Orders placed for Mama Chidinma's Kitchen items will appear here.</div>";
+  } else {
+    wrap.innerHTML = `<table class="tbl"><thead><tr><th>Order</th><th>Items</th><th>Zone</th><th>Status</th><th>Action</th></tr></thead><tbody>
+      ${myOrders.map(o=>`<tr><td class="mono">${o.id}</td><td>${o.items.map(i=>i.name).join(', ')}</td><td>${o.zone.split('—')[0].trim()}</td><td><span class="status-pill status-${o.status}">${o.status}</span></td>
+      <td>${o.status==='Placed'?`<button class="btn btn-outline btn-sm" onclick="vendorAdvance('${o.id}','Preparing')">Accept</button>`
+        : o.status==='Preparing'?`<button class="btn btn-outline btn-sm" onclick="vendorAdvance('${o.id}','Ready')">Mark Ready</button>`
+        : `<span class="field-hint">—</span>`}</td></tr>`).join('')}
+    </tbody></table>`;
+  }
+  document.getElementById('vendorMenuList').innerHTML = state.vendorMenu.map(m=>`
+    <div class="menu-card" style="margin-bottom:10px;">
+      <div class="emoji">🍽️</div>
+      <div class="info">
+        <h4>${m.name}</h4>
+        <div class="price">₦${m.price.toLocaleString()}</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-ghost btn-sm" onclick="toggleAvailability('${m.id}')">${m.available===false?'Unavailable':'Available'}</button>
+        <button class="btn btn-ghost btn-sm" onclick="removeMenuItem('${m.id}')">Delete</button>
+      </div>
+    </div>`).join('');
+  const chart = document.getElementById('salesChart');
+  const sales = [12,18,9,22,26,31,19];
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const max = Math.max(...sales);
+  chart.innerHTML = sales.map((s,i)=>`<div class="col"><div class="bar" style="height:${(s/max*120)}px;"></div><div class="lbl">${days[i]}</div></div>`).join('');
+}
+function vendorAdvance(orderId, status){
+  const o = state.orders.find(o=>o.id===orderId);
+  if(o){ o.status = status; renderVendorDash(); if(document.getElementById('view-customer').classList.contains('hidden')===false) renderCustomerDash(); toast('Order '+orderId+' marked '+status); }
+}
+function addMenuItem(){
+  const name = prompt('New menu item name:');
+  if(!name) return;
+  const price = parseInt(prompt('Price (₦):','1000')) || 1000;
+  state.vendorMenu.push({id:'vm'+Date.now(), name, price, cat:'lunch', vendor:'v1'});
+  renderVendorDash();
+  toast('Menu item added.');
+}
+function removeMenuItem(id){
+  state.vendorMenu = state.vendorMenu.filter(m=>m.id!==id);
+  renderVendorDash();
+}
+function toggleAvailability(id){
+  const m = state.vendorMenu.find(m=>m.id===id);
+  m.available = m.available===false ? true : false;
+  renderVendorDash();
+}
+
+function renderCourierDash(){
+  const available = state.orders.filter(o=>o.status==='Ready' && !o.courier);
+  const wrap = document.getElementById('courierAvailable');
+  if(available.length===0){
+    wrap.innerHTML = '<div class="empty-state">No ready orders right now. Place an order from the Menu page and wait for it to become Ready.</div>';
+  } else {
+    wrap.innerHTML = available.map(o=>`
+      <div class="card" style="margin-bottom:12px;">
+        <div class="flex-between">
+          <div><strong class="mono">${o.id}</strong><div class="field-hint">${o.zone}</div></div>
+          <button class="btn btn-primary btn-sm" onclick="claimOrder('${o.id}')">Claim</button>
+        </div>
+      </div>`).join('');
+  }
+  const mine = state.orders.filter(o=>o.courier==='Tunde' && o.status==='Dispatched');
+  const mineWrap = document.getElementById('courierMine');
+  if(mine.length===0){
+    mineWrap.innerHTML = '<div class="empty-state">No active deliveries. Claim a ready order to get started.</div>';
+  } else {
+    mineWrap.innerHTML = mine.map(o=>`
+      <div class="card" style="margin-bottom:12px;">
+        <div class="flex-between"><strong class="mono">${o.id}</strong><span class="status-pill status-Dispatched">En route</span></div>
+        <p class="field-hint">Deliver to: ${o.zone}</p>
+        <div class="field"><label>Enter customer's OTP to confirm delivery</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" maxlength="4" id="otpInput-${o.id}" placeholder="0000">
+            <button class="btn btn-gold btn-sm" onclick="confirmDelivery('${o.id}')">Confirm</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+  document.getElementById('kEarnTotal').textContent = '₦'+state.courierEarnings.toLocaleString();
+  document.getElementById('kEarnCount').textContent = state.courierDeliveries;
+  const hist = document.getElementById('courierHistory');
+  const done = state.orders.filter(o=>o.courier==='Tunde' && o.status==='Delivered');
+  hist.innerHTML = done.length===0 ? '<div class="empty-state">No completed deliveries yet.</div>' :
+    `<table class="tbl"><thead><tr><th>Order</th><th>Zone</th><th>Earned</th></tr></thead><tbody>
+      ${done.map(o=>`<tr><td class="mono">${o.id}</td><td>${o.zone.split('—')[0].trim()}</td><td class="mono">₦105</td></tr>`).join('')}
+    </tbody></table>`;
+}
+function claimOrder(orderId){
+  const o = state.orders.find(o=>o.id===orderId);
+  if(o){ o.status='Dispatched'; o.courier='Tunde'; renderCourierDash(); renderVendorDash(); toast('Order '+orderId+' claimed — head to '+o.zone); }
+}
+function confirmDelivery(orderId){
+  const input = document.getElementById('otpInput-'+orderId);
+  const o = state.orders.find(o=>o.id===orderId);
+  if(input.value.trim() !== o.otp){ toast('Incorrect OTP — ask the customer to confirm their code.'); return; }
+  o.status='Delivered';
+  state.courierEarnings += 105;
+  state.courierDeliveries += 1;
+  renderCourierDash();
+  renderCustomerDash();
+  toast('Delivery confirmed — ₦105 added to your earnings.');
+}
+
+/* ============================= INIT ============================= */
+updateCartUI();
+showView('home');
+</script>
+</body>
+</html>
